@@ -56,7 +56,7 @@ function handleWfsName(event) {
     });
     return true;
 }
-fetch('http://pvretano.com/cubewerx/cubeserv/default/wfs/3.0.0/framework')
+fetch('https://pvretano.com/cubewerx/cubeserv/default/wfs/3.0.0/framework')
     .then(function (resp) { return resp.text(); })
     .then(function (text) {
     var ast = XmlReader.parseSync(text);

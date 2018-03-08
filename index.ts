@@ -35,7 +35,6 @@ function handleWfsName(event): boolean {
 	const currentExtent = map.getView().calculateExtent();
 	console.log('currentExtent', currentExtent);
 	const bbox = currentExtent.join(',') + `,EPSG:3857`;
-	//const bbox = extent84.join(',');
 	console.log(bbox);
 	const link = collection.children[0].attributes.href + `?bbox=` + (bbox) + `&count=30`;
 	console.log(link);
@@ -63,7 +62,7 @@ function handleWfsName(event): boolean {
 	return true;
 }
 
-fetch('http://pvretano.com/cubewerx/cubeserv/default/wfs/3.0.0/framework')
+fetch('https://pvretano.com/cubewerx/cubeserv/default/wfs/3.0.0/framework')
 .then(resp => resp.text())
 .then(text => {
 	const ast = XmlReader.parseSync(text);
