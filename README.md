@@ -13,12 +13,12 @@ Simple WFS capabilities and get features client.
 
 ### to change the code:
 
-```./node_modules/.bin/watchify -p tsify index.ts -o index.js```
+```npm run watch```
 
 ### to run the server in development mode:
 
-```./node_modules/.bin/live-server```
+```npm run serve```
 
 ### to compile in production mode:
 
-```./node_modules/.bin/browserify -p tsify index.ts -o index.js```
+```npm run build```
