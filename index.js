@@ -4,13 +4,31 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var xmlQuery = require("./node_modules/xml-query/dist");
 var XmlReader = require("./node_modules/xml-reader/dist/reader");
 var jQuery = require("jquery");
+var attribution = new ol.control.Attribution({
+    collapsible: false
+});
 var map = new ol.Map({
     target: 'map',
     layers: [
         new ol.layer.Tile({
-            source: new ol.source.OSM()
+            source: new ol.source.OSM({
+                attributions: [
+                    new ol.Attribution({
+                        html: 'WFS 3 © ' +
+                            '<a href="https://www.cubewerx.com/">CubeWerx.com</a>'
+                    }),
+                    new ol.Attribution({
+                        html: 'Web Client © ' +
+                            '<a href="https://www.landcareresearch.co.nz/">Manaaki Whenua - Landcare Research</a>'
+                    }),
+                    new ol.Attribution({
+                        html: '' + ol.source.OSM.ATTRIBUTION
+                    })
+                ]
+            })
         })
     ],
+    controls: ol.control.defaults({ attribution: false }).extend([attribution]),
     view: new ol.View({
         center: ol.proj.fromLonLat([-105.0849259, 40.5591386]),
         zoom: 17
