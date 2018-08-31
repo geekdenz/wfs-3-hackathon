@@ -1,4 +1,4 @@
-// import * as ol from './node_modules/openlayers/dist/ol';
+import * as ol from './node_modules/openlayers/dist/ol';
 import * as convert from 'xml-js';
 import * as xmlQuery from './node_modules/xml-query/dist';
 import * as XmlReader from './node_modules/xml-reader/dist/reader';
@@ -7,16 +7,13 @@ import * as jQuery from 'jquery';
 var attribution = new ol.control.Attribution({
 	collapsible: false
 });
+const nzLonLat = [173.8695203, -41.04294]
 const map = new ol.Map({
 	target: 'map',
 	layers: [
 		new ol.layer.Tile({
 			source: new ol.source.OSM({
 				attributions: [
-					new ol.Attribution({
-						html: 'WFS 3 © ' +
-						'<a href="https://www.cubewerx.com/">CubeWerx.com</a>'
-					}),
 					new ol.Attribution({
 						html: 'Web Client © ' +
 						'<a href="https://www.landcareresearch.co.nz/">Manaaki Whenua - Landcare Research</a>'
@@ -30,8 +27,8 @@ const map = new ol.Map({
 	],
 	controls: ol.control.defaults({attribution: false}).extend([attribution]),
 	view: new ol.View({
-		center: ol.proj.fromLonLat([-105.0849259,40.5591386]),
-		zoom: 17
+		center: ol.proj.fromLonLat(nzLonLat),
+		zoom: 8
 	})
 });
 
@@ -40,7 +37,9 @@ const $ = jQuery;
 let collections: any[] = [];
 
 function handleWfsName(event): boolean {
-	const that: JQuery = this;
+	const that: JQuery = this
+	const id = $(that).attr('id')
+	console.log(id)
 	const collection = collections.filter(c => {
 		const child = c.children.filter(c => {
 			const nameChild = c;
@@ -79,9 +78,23 @@ function handleWfsName(event): boolean {
 	return true;
 }
 
-fetch('https://pvretano.com/cubewerx/cubeserv/default/wfs/3.0.0/framework')
-.then(resp => resp.text())
-.then(text => {
+const wfs3url = 'https://npm.landcareresearch.co.nz/wfs/collections?wfs2=https%3A%2F%2Flris.scinfo.org.nz%2Fservices%3Bkey%3D619588ed391245328d9c58fb16558c44%2Fwfs&count=10'
+fetch(wfs3url)
+.then(resp => resp.json())
+.then(json => {
+	// return console.log(json)
+	const collections = json.collections
+	const titles = collections.map(c => c.title)
+	const links = collections.map(c => c.links[0])
+	// console.log("links:", links)
+	collections.map(c => {
+		const title = c.title
+		const name = c.name
+		const link = c.links[0]
+		$('#name-list').append($(`<li><a href="#" id="${name}" class="wfs-name">${title}</a> Download: <a target="_blank" href="${link}">Data</a></li>`))
+	})
+	$('.wfs-name').click(handleWfsName)
+	/*
 	const ast = XmlReader.parseSync(text);
 	const xq = xmlQuery(ast).find('Collection');
 	xq.map(node => {
@@ -96,5 +109,6 @@ fetch('https://pvretano.com/cubewerx/cubeserv/default/wfs/3.0.0/framework')
 		}
 	});
 	$('.wfs-name').click(handleWfsName);
+	*/
 });
 
