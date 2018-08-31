@@ -34,25 +34,18 @@ const map = new ol.Map({
 
 const $ = jQuery;
 
-let collections: any[] = [];
+const collections: any[] = [];
 
 function handleWfsName(event): boolean {
 	const that: JQuery = this
 	const id = $(that).attr('id')
-	console.log(id)
-	const collection = collections.filter(c => {
-		const child = c.children.filter(c => {
-			const nameChild = c;
-			return c.name == 'Name';
-		})[0];
-		const value = child.children[0].value;
-		return value === $(that).attr('id');
-	})[0];
+	const collection = collections.filter(c => c.name === id)[0];
+	console.log('ID:', id, collection)
 	const currentExtent = map.getView().calculateExtent();
 	console.log('currentExtent', currentExtent);
 	const bbox = currentExtent.join(',') + `,EPSG:3857`;
 	console.log(bbox);
-	const link = collection.children[0].attributes.href + `?bbox=` + (bbox) + `&count=30`;
+	const link = collection.links[0].href
 	console.log(link);
 	fetch(link, {
 		headers: {
@@ -83,17 +76,18 @@ fetch(wfs3url)
 .then(resp => resp.json())
 .then(json => {
 	// return console.log(json)
-	const collections = json.collections
 	const titles = collections.map(c => c.title)
 	const links = collections.map(c => c.links[0])
 	// console.log("links:", links)
-	collections.map(c => {
+	json.collections.map(c => {
 		const title = c.title
 		const name = c.name
 		const link = c.links[0]
 		$('#name-list').append($(`<li><a href="#" id="${name}" class="wfs-name">${title}</a> Download: <a target="_blank" href="${link}">Data</a></li>`))
+		collections.push(c);
 	})
 	$('.wfs-name').click(handleWfsName)
+	$('.loading').hide()
 	/*
 	const ast = XmlReader.parseSync(text);
 	const xq = xmlQuery(ast).find('Collection');
