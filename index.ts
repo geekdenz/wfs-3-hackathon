@@ -66,8 +66,8 @@ function handleWfsName(event): boolean {
 		});
 	return true;
 }
-
-const wfs3url = 'https://npm.landcareresearch.co.nz/wfs/collections?wfs2=https%3A%2F%2Flris.scinfo.org.nz%2Fservices%3Bkey%3D619588ed391245328d9c58fb16558c44%2Fwfs&count=10'
+const wfs2Index = document.location.search.indexOf("wfs2=")
+const wfs3url = wfs2Index !== -1 ? 'https://npm.landcareresearch.co.nz/wfs/collections?wfs2=' + document.location.search.substring(wfs2Index + "wfs2=".length) : 'https://npm.landcareresearch.co.nz/wfs/collections?wfs2=https%3A%2F%2Flris.scinfo.org.nz%2Fservices%3Bkey%3D619588ed391245328d9c58fb16558c44%2Fwfs&count=10'
 fetch(wfs3url)
 .then(resp => resp.json())
 .then(json => {
@@ -78,7 +78,7 @@ fetch(wfs3url)
 	json.collections.map(c => {
 		const title = c.title
 		const name = c.name
-		const link = c.links[0]
+		const link = c.links[0].href
 		$('#name-list').append($(`<li><a href="#" id="${name}" class="wfs-name">${title}</a> Download: <a target="_blank" href="${link}">Data</a></li>`))
 		collections.push(c);
 	})
