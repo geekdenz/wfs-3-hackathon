@@ -35,6 +35,8 @@ const map = new ol.Map({
 const $ = jQuery;
 
 const collections: any[] = [];
+const applyTransform = ol.extent.applyTransform
+const getTransform = ol.proj.getTransform
 
 function handleWfsName(event): boolean {
 	const that: JQuery = this
@@ -43,29 +45,23 @@ function handleWfsName(event): boolean {
 	console.log('ID:', id, collection)
 	const currentExtent = map.getView().calculateExtent();
 	console.log('currentExtent', currentExtent);
+	
 	const bbox = currentExtent.join(',') + `,EPSG:3857`;
 	console.log(bbox);
-	const link = collection.links[0].href
+	const link = collection.links[0].href + "&count=20&bbox=" + bbox + "&"
 	console.log(link);
-	fetch(link, {
-		headers: {
-			'accept': 'application/geo+json'
-		}
-	})
+	fetch(link, { headers: { accept: "application/geo+json" } })
 		.then(r => r.json())
 		.then(geoJson => {
 			console.log(geoJson);
-			const features = (new ol.format.GeoJSON()).readFeatures(geoJson, {
-				dataProjection: 'EPSG:4326',
-				featureProjection: 'EPSG:3857'
+			const features = new ol.format.GeoJSON().readFeatures(geoJson, {
+				dataProjection: "EPSG:4326",
+				featureProjection: "EPSG:3857"
 			});
-			const source = new ol.source.Vector({
-				features: features
-			});
-			const layer = new ol.layer.Vector({
-				source: source//,
-				//style: styleFunction // TODO: fails because of types
-			});
+			const source = new ol.source.Vector({ features: features });
+			const layer = new ol.layer.Vector({ source: source }); //,
+			//style: styleFunction // TODO: fails because of types
+			console.log("layers:", map.get("layers"))
 			map.addLayer(layer);
 		});
 	return true;
